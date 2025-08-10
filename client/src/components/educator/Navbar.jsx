@@ -15,8 +15,6 @@ const Navbar = () => {
       {user? <UserButton/> : <img className='max-w-8' src={assets.profile_img}/>}
      </div>
     </div>
-
   )
 }
-
 export default Navbar
