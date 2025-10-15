@@ -6,7 +6,7 @@ import { assets } from "../../assets/assets";
 import humanizeDuration from "humanize-duration";
 import Footer from "../../components/student/Footer";
 import YouTube from "react-youtube";
-// import Loading from "../../components/student/Loading";
+import Loading from "../../components/student/Loading";
 
 const CourseDetails = () => {
   const { id } = useParams();

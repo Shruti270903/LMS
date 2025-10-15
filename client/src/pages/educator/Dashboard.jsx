@@ -71,5 +71,4 @@ const Dashboard = () => {
    </div>
   ) : <Loading/>
 };
-
 export default Dashboard;
