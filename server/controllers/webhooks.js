@@ -1,5 +1,6 @@
 import { Webhook } from "svix";
-import User from "../models/User.model.js";
+import User from "../models/User.models.js";
+
 
 //API controller function to manage clerk  User with database
 export const clerkWebhooks = async (req, res) => {
