@@ -1,31 +1,25 @@
-import express from "express";
+import express from 'express';
 import cors from 'cors';
-import 'dotenv/config'
-import connectDB from "./configs/mongodb.js";
-import { clerkWebhooks } from "./controllers/webhooks.js";
-import mongoose from "mongoose";
-import educatorRouter from "./routes/educatorRoutes.js";
-import { clerkMiddleware } from "@clerk/express";
+import 'dotenv/config';
+import connectDB from './configs/mongodb.js';
+import { clerkWebhooks } from './controllers/webhooks.js';
 
-//Initialize Express
+//Initialize express app
 const app = express();
 
-//Connect to db
-await connectDB()
-//middleweares
-app.use(cors())
-app.use(clerkMiddleware())
+//connect to database
+await connectDB();
 
-//Route
-app.get('/', (req,res)=>res.send("API Working"))
-app.post('/clerk', express.json(), clerkWebhooks)
-app.use('/api/educator', express.json(), educatorRouter)
+//Middleware
+app.use(cors());
 
-//port
-const PORT =process.env.PORT || 5000
+//Routes
+app.get('/', (req, res) =>  res.send('Welcome to the LMS server!  API working '));
+app.post('/clerk', express.json(), clerkWebhooks);
+
+//Port
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, ()=>{
-  console.log(`server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on port http://localhost:${PORT}`);
 })
-
-
