@@ -9,8 +9,8 @@ import User from './models/User.models.js';
 const app = express();
 
 //connect to database
-app.use(express.json());
 await connectDB();
+app.use(express.json());
 
 
 //Middleware
