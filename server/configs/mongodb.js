@@ -9,7 +9,7 @@ const connectDB = async () => {
   );
 
   await mongoose
-    .connect(`${process.env.MONGODB_URI}/lms`)
+    .connect(`${process.env.MONGODB_URI}`)
     .then(() => {
       console.log("MongoDB connected");
     })
