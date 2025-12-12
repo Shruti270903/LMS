@@ -6,6 +6,12 @@ const UserSchema = new mongoose.Schema(
     name: { type: String, default: "" },
     email: { type: String, required: true, unique: true },
     imageUrl: { type: String, default: "" },
+     enrolledCourses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      }
+    ],
   },
   { timestamps: true }
 );
