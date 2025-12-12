@@ -3,10 +3,17 @@ import uniqid from "uniqid";
 import Quill from "quill";
 import { assets } from "../../assets/assets";
 import "quill/dist/quill.snow.css";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const AddCourse = () => {
+
+  const {backUrl, getToken} = useContext(AppContext)
   const quillRef = useRef(null);
   const editorRef = useRef(null);
+
   const [courseTitle, setCourseTitle] = useState("");
   const [coursePrice, setCoursePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -80,9 +87,43 @@ const handleLecture = (action, chapterId, lectureIndex) => {
       isPreviewFree:false,
     });
   };
-const handleSubmit = async(e)  => {
-  e.preventDefault()
+const handleSubmit = async (e) => {
+    try {
+        e.preventDefault();
+        if (!image) {
+            toast.error('Thumbnail Not Selected');
+        }
+        const courseData = {
+            courseTitle,
+            courseDescription: quillRef.current.root.innerHTML,
+            coursePrice: Number(coursePrice),
+            discount: Number(discount),
+            courseContent: chapters,
+        };
+        const formData = new FormData()
+        formData.append('courseData', JSON.stringify(courseData))
+        formData.append('image', image)
+
+        const token = await getToken()
+        const {data} = await axios.post(backUrl + '/api/educator/add-course', formData, {headers: {Authorization:`Bearer ${token}`}})
+
+        if (data.success) {
+    toast.success(data.message);
+    setCourseTitle('');
+    setCoursePrice(0);
+    setDiscount(0);
+    setImage(null);
+    setChapters([]);
+    quillRef.current.root.innerHTML = "";
+} else {
+    toast.error(data.message)
+}
+
+      } catch (error) {
+        console.log(error);
+    }
 };
+
   useEffect(() => {
     //initiate quill only once
     if (!quillRef.current && editorRef.current) {
@@ -254,79 +295,3 @@ const handleSubmit = async(e)  => {
   );
 };
 export default AddCourse;
-
-// const AddCourse = () => {
-//   const quillRef = useRef(null);
-//   const editorRef = useRef(null);
-//   const [courseTitle, setCourseTitle] = useState('');
-//   const [coursePrice, setCoursePrice] = useState(0);
-//   const [discount, setDiscount] = useState(0);
-//   const [image, setImage] = useState(null);
-//   const [chapters, setChapters] = useState([]);
-//   const [showPopup, setShowPopup] = useState(false);
-//   const [currentChapterId, setChapterId] = useState(null);
-//   const [lectureDetails, setLectureDetails] = useState({
-//     lectureTitle: '',
-//     lectureDuration: '',
-//     lectureUrl: '',
-//     isPreviewFree: false,
-//   });
-
-//   useEffect(() => {
-//     if (!quillRef.current && editorRef.current) {
-//       quillRef.current = new Quill(editorRef.current, {
-//         theme: 'snow',
-//       });
-//     }
-//   }, []);
-
-//   return (
-//     <div className='h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
-//       <form className='flex flex-col gap-4 max-w-md w-full text-gray-500'>
-//         <div className='flex flex-col gap-1'>
-//           <p>Course Title</p>
-//           <input
-//             onChange={(e) => setCourseTitle(e.target.value)}
-//             value={courseTitle}
-//             type="text"
-//             placeholder='Type here'
-//             className='outline-none md:py-2.5 py-2 px-3 rounded border-gray-500 border'
-//             required
-//           />
-//         </div>
-//         <div className='flex flex-col gap-1'>
-//           <p>Course Description</p>
-//           <div ref={editorRef} className='border border-gray-300 rounded p-2 bg-white' />
-//         </div>
-//         <div className='flex items-center justify-between flex-wrap'>
-//           <div className='flex flex-col gap-1'>
-//             <p>Course Price</p>
-//             <input
-//               onChange={(e) => setCoursePrice(e.target.value)}
-//               value={coursePrice}
-//               type="number"
-//               placeholder='0'
-//               className='outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500'
-//               required
-//             />
-//           </div>
-//           <div className='flex md:flex-row flex-col items-center gap-3'>
-//             <p>Course Thumbnail</p>
-//             <label htmlFor="thumbnailImage" className='flex items-center gap-3 cursor-pointer'>
-//               <img src={assets.file_upload_icon} alt="Upload" className='p-3 bg-blue rounded' />
-//             </label>
-//             <input
-//               id="thumbnailImage"
-//               type="file"
-//               accept="image/*"
-//               hidden
-//               onChange={(e) => setImage(e.target.files[0])}
-//             />
-//           </div>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default AddCourse;
