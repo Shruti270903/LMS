@@ -6,10 +6,6 @@ import "quill/dist/quill.snow.css";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
-<<<<<<< HEAD
-=======
-import { get } from "mongoose";
->>>>>>> bc8eafed2095e2b0088976e539da66d11ec5357f
 import axios from "axios";
 
 const AddCourse = () => {
@@ -122,10 +118,6 @@ const handleSubmit = async (e) => {
 } else {
     toast.error(data.message)
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> bc8eafed2095e2b0088976e539da66d11ec5357f
       } catch (error) {
         console.log(error);
     }
