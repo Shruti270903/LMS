@@ -6,7 +6,6 @@ import "quill/dist/quill.snow.css";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
-import { get } from "mongoose";
 import axios from "axios";
 
 const AddCourse = () => {
@@ -16,7 +15,7 @@ const AddCourse = () => {
   const editorRef = useRef(null);
 
   const [courseTitle, setCourseTitle] = useState("");
-  const [submit, setSubmit] = useState(0)
+
   const [coursePrice, setCoursePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [image, setImage] = useState(null);
