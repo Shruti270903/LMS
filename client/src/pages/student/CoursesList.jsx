@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import SearchBar from "../../components/student/SearchBar";
 import { useParams } from "react-router-dom";
-import CourseCard from "../../components/student/courseCard";
+import CourseCard from "../../components/student/CourseCard";
 import { assets } from "../../assets/assets";
 import Footer from "../../components/student/Footer";
 
