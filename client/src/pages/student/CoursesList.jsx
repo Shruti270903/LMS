@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import SearchBar from "../../components/student/SearchBar";
 import CourseCard from "../../components/student/CourseCard";
+import { assets } from "../../assets/assets";
 import Footer from "../../components/student/Footer";
 
 const CoursesList = () => {

@@ -1,3 +1,6 @@
+import { useAuth } from "@clerk/clerk-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
@@ -24,48 +27,61 @@ const CourseDetails = () => {
     backendUrl,
     userData,
   } = useContext(AppContext);
+  const { getToken } = useAuth();
 
-   const fetchCourseData = async () => {
+  const fetchCourseData = async () => {
     try {
-        const { data } = await axios.get(backendUrl+ '/api/course/'+ id);
-        if (data.success) {
-            setCourseData(data.courseData);
-        } else {
-            toast.error(data.message);
-        }
+      const { data } = await axios.get(backendUrl + "/api/course/" + id);
+      if (data.success) {
+        setCourseData(data.courseData);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-        toast.error(error.message);
+      toast.error(error.message);
     }
-};
-const enrollCourse = async () => {
-    try {
-        if (!userData) {
-            return toast.warn('Login to Enroll');
-        }
-        if (isAlreadyEnrolled) {
-            return toast.warn('Already Enrolled');
-        }
-        const token = await getToken();
-const {data} = await axios.post(backendUrl+'/api/user/purchase',         {courseId:courseData._id},{headers:{Authorization:`Bearer${token}`}});
-if (data.success) {
-    const { session_url } = data;
-    window.location.replace(session_url);
-} else {
-    toast.error(data.message);
-}
-    } catch (error) {
-        console.log(error);
+  };
+  const enrollCourse = async () => {
+  try {
+    if (!userData) {
+      return toast.warn("Login to Enroll");
     }
+
+    if (isAlreadyEnrolled) {
+      return toast.warn("Already Enrolled");
+    }
+
+    const token = await getToken();
+
+    const { data } = await axios.post(
+      backendUrl + "/api/user/purchase",
+      { courseId: courseData._id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (data.success) {
+      window.location.replace(data.session_url);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
 };
+
   useEffect(() => {
     fetchCourseData();
   }, []);
 
   useEffect(() => {
     if (userData && courseData) {
-setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
     }
-}, [userData, courseData]);
+  }, [userData, courseData]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -116,7 +132,9 @@ setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
             </div>
             <p className="text-sm">
               Course by{" "}
-              <span className="text-blue-600 underline">{courseData.educator.name}</span>
+              <span className="text-blue-600 underline">
+                {courseData.educator.name}
+              </span>
             </p>
             <div className="pt-8 text-gray-800">
               <h2 className="text-xl font-semibold">Course Structures</h2>
@@ -208,77 +226,81 @@ setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
             </div>
           </div>
           {/* Right column (optional content like thumbnail or price) */}
-        <div className=" ml-10">
-          <div className="p-8 max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]">
-            {playerData ? (
-              <YouTube
-                videoId={playerData.videoId}
-                opts={{ playerVars: { autoplay: 1 } }}
-                iframeClassName="w-full aspect-video"
-              />
-            ) : (
-              <img src={courseData.courseThumbnail} alt="" />
-            )}
-            <div></div>
-            <div className="p-5">
-              <div className="flex items-center gap-2">
-                <img
-                  className="w-3.5"
-                  src={assets.time_left_clock_icon}
-                  alt="time left clock icon "
+          <div className=" ml-10">
+            <div className="p-8 max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]">
+              {playerData ? (
+                <YouTube
+                  videoId={playerData.videoId}
+                  opts={{ playerVars: { autoplay: 1 } }}
+                  iframeClassName="w-full aspect-video"
                 />
+              ) : (
+                <img src={courseData.courseThumbnail} alt="" />
+              )}
+              <div></div>
+              <div className="p-5">
+                <div className="flex items-center gap-2">
+                  <img
+                    className="w-3.5"
+                    src={assets.time_left_clock_icon}
+                    alt="time left clock icon "
+                  />
+                </div>
+                <p className="text-red-500">
+                  {" "}
+                  <span className="font-medium">5 days</span> left at this
+                  price!{" "}
+                </p>
               </div>
-              <p className="text-red-500">
-                {" "}
-                <span className="font-medium">5 days</span> left at this price!{" "}
+              <div className="flex gap-3 items-center pt-2">
+                <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
+                  {currency}
+                  {(
+                    courseData.coursePrice -
+                    (courseData.discount * courseData.coursePrice) / 100
+                  ).toFixed(2)}
+                </p>
+                <p className="md:text-lg text-gray-500 line-through">
+                  {currency}
+                  {courseData.coursePrice}
+                </p>
+                <p className="md:text-lg text-gray-500">
+                  {courseData.discount}% off
+                </p>
+              </div>
+              <div className="flex   items-center gap-1">
+                <img src={assets.star} alt="star icon" />
+                <p>{calculateRating(courseData)}</p>
+              </div>
+              <div className="h-4 w-px bg-gray-500/40"> </div>
+              <div className="flex items-center gap-1">
+                <img src={assets.time_clock_icon} alt="clock icon" />
+                <p>{calculateCourseDuration(courseData)}</p>
+              </div>
+              <div className="h-4 w-px bg-gray-500/40"> </div>
+              <div className="flex items-center gap-1">
+                <img src={assets.lesson_icon} alt="clock icon" />
+                <p>{calculateNoOfLectures(courseData)} lessons</p>
+              </div>
+            </div>
+            <button
+              onClick={enrollCourse}
+              className="mx-8 md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium"
+            >
+              {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
+            </button>
+            <div className="pt-6">
+              <p className="p-8 md:text-xl text-lg font-medium text-gray-800">
+                What's in the course?
               </p>
+              <ul className="p-8 ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
+                <li>Lifetime access with free updates.</li>
+                <li>step-by-step, hands-on project guidance.</li>
+                <li>Downloadable resources and source code.</li>
+                <li>Quizzes to test your knowledge</li>
+                <li>Certificate of completion</li>
+              </ul>
             </div>
-            <div className="flex gap-3 items-center pt-2">
-              <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
-                {currency}
-                {(
-                  courseData.coursePrice -
-                  (courseData.discount * courseData.coursePrice) / 100
-                ).toFixed(2)}
-              </p>
-              <p className="md:text-lg text-gray-500 line-through">
-                {currency}
-                {courseData.coursePrice}
-              </p>
-              <p className="md:text-lg text-gray-500">
-                {courseData.discount}% off
-              </p>
-            </div>
-            <div className="flex   items-center gap-1">
-              <img src={assets.star} alt="star icon" />
-              <p>{calculateRating(courseData)}</p>
-            </div>
-            <div className="h-4 w-px bg-gray-500/40"> </div>
-            <div className="flex items-center gap-1">
-              <img src={assets.time_clock_icon} alt="clock icon" />
-              <p>{calculateCourseDuration(courseData)}</p>
-            </div>
-            <div className="h-4 w-px bg-gray-500/40"> </div>
-            <div className="flex items-center gap-1">
-              <img src={assets.lesson_icon} alt="clock icon" />
-              <p>{calculateNoOfLectures(courseData)} lessons</p>
-            </div>
-          </div>
-          <button onClick={enrollCourse} className="mx-8 md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
-            {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
-          </button>
-          <div className="pt-6">
-            <p className="p-8 md:text-xl text-lg font-medium text-gray-800">
-              What's in the course?
-            </p>
-            <ul className="p-8 ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
-              <li>Lifetime access with free updates.</li>
-              <li>step-by-step, hands-on project guidance.</li>
-              <li>Downloadable resources and source code.</li>
-              <li>Quizzes to test your knowledge</li>
-              <li>Certificate of completion</li>
-            </ul>
-          </div>
           </div>
         </div>
       ) : (
