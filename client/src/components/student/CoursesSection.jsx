@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
-import CourseCard from "./courseCard";
+import CourseCard from "./CourseCard";
 import { useContext } from "react";
 const CoursesSection = () => {
   let p1 =
