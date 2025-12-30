@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+const backendUrl = import.meta.env.VITE_BACKEND_URL 
 
 const AddCourse = () => {
 
@@ -105,7 +106,7 @@ const handleSubmit = async (e) => {
         formData.append('image', image)
 
         const token = await getToken()
-        const {data} = await axios.post(backUrl + '/api/educator/add-course', formData, {headers: {Authorization:`Bearer ${token}`}})
+        const {data} = await axios.post(backendUrl+'/api/educator/add-course', formData, {headers: {Authorization:`Bearer ${token}`}})
 
         if (data.success) {
     toast.success(data.message);

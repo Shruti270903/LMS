@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { dummyCourses } from "../assets/assets";
 import { data, useNavigate } from "react-router-dom";
 import humanizeDuration from 'humanize-duration'
 import { useAuth, useUser } from "@clerk/clerk-react";
@@ -18,7 +17,7 @@ export const AppContextProvider = (props)=>{
     const[isEducator, setIsEducator] = useState(false)
     const[enrolledCourses, setEnrolledCourses] = useState([])
     const[userData, setUserData] = useState(null)
-    
+       console.log("backend uri",backendUrl)
 
     //Fetch All courses 
     const fetchAllCourses = async()=>{
@@ -47,7 +46,7 @@ export const AppContextProvider = (props)=>{
         } else {
             toast.error(data.message)
         }
-    } catch (err) {
+    } catch (error) {
        toast.error(error.message)
     }
 };
