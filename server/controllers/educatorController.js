@@ -246,14 +246,18 @@ export const addCourse = async (req, res) => {
     const parsedCourseData = JSON.parse(req.body.courseData);
     parsedCourseData.educator = educatorId;
 
-    const newCourse = await Course.create(parsedCourseData);
+    // 🔥 IMPORTANT PART (Cloudinary + buffer)
+    const imageUpload = await cloudinary.uploader.upload(
+      `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+      { folder: "courses" }
+    );
 
-    const imageUpload = await cloudinary.uploader.upload(req.file.path);
-    newCourse.courseThumbnail = imageUpload.secure_url;
+    const newCourse = await Course.create({
+      ...parsedCourseData,
+      courseThumbnail: imageUpload.secure_url,
+    });
 
-    await newCourse.save();
-
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "New course added successfully",
       courseId: newCourse._id,
@@ -261,9 +265,13 @@ export const addCourse = async (req, res) => {
 
   } catch (error) {
     console.error("ADD COURSE ERROR:", error);
-    res.status(500).json({ success: false });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
+
 
 /* =======================
    Get Educator Courses
