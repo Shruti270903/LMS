@@ -68,7 +68,7 @@ const handleLecture = (action, chapterId, lectureIndex) => {
     }
   }; 
   const addLecture =()=>{
-    setChapterId(
+    setChapters(
       chapters.map((chapter)=>{
         if(chapter.chapterId === currentChapterId){
           const newLecture = {
@@ -90,6 +90,7 @@ const handleLecture = (action, chapterId, lectureIndex) => {
     });
   };
 const handleSubmit = async (e) => {
+  axios.defaults.withCredentials = true;
     try {
         e.preventDefault();
         if (!image) {
@@ -290,7 +291,7 @@ const handleSubmit = async (e) => {
         </div>
           ) }
         </div>
-      <button type="submit" className="bg-black text-white   w-max py-2.5 px-8 rounded my-4">ADD</button>
+      <button  type="submit" className="bg-black text-white   w-max py-2.5 px-8 rounded my-4">ADD</button>
       </form>
     </div>
   );
