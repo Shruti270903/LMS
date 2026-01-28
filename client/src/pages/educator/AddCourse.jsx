@@ -108,7 +108,16 @@ const handleSubmit = async (e) => {
         formData.append('image', image)
 
         const token = await getToken()
-        const {data} = await axios.post(backendUrl+'/api/educator/add-course', formData, {headers: {Authorization:`Bearer ${token}`}});
+        const {data} = await axios.post(
+  backendUrl + "/api/educator/add-course",
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
 
         if (data.success) {
     toast.success(data.message);
@@ -291,7 +300,7 @@ const handleSubmit = async (e) => {
         </div>
           ) }
         </div>
-      <button  type="submit" className="bg-black text-white   w-max py-2.5 px-8 rounded my-4">ADD</button>
+      <button  type="submit" className="bg-black text-white   w-max py-2.5 px-8 rounded my-4 hover:bg-gray-600">ADD</button>
       </form>
     </div>
   );

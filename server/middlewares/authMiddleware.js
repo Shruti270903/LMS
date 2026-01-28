@@ -22,7 +22,9 @@ import { clerkClient } from "@clerk/express";
 export const protectEducator = async (req, res, next) => {
   try {
     // ✅ Clerk injects auth object
-    const { userId } = req.auth;
+    // const { userId } = req.auth;
+    const userId = req.auth().userId;
+
 
     if (!userId) {
       return res
