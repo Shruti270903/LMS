@@ -13,6 +13,10 @@ import userRouter from "./routes/userRoutes.js";
 //initialize express
 const app = express();
 
+
+/* ✅ Handle preflight requests */
+app.options(/.*/, cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -22,7 +26,8 @@ await connectDB();
 await connectCloudinary();
 //Middleware
 app.use(cors({
-  origin:["https://lms-backend-cj0y.onrender.com"],
+  origin:["https://lms-frontend-62er.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials:true
 }));
 app.use(clerkMiddleware());
