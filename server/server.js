@@ -14,8 +14,7 @@ import userRouter from "./routes/userRoutes.js";
 const app = express();
 
 
-/* ✅ Handle preflight requests */
-app.options(/.*/, cors());
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,6 +27,7 @@ await connectCloudinary();
 app.use(cors({
   origin:["https://lms-frontend-62er.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allowedHeaders: ["Content-Type", "Authorization"],
   credentials:true
 }));
 app.use(clerkMiddleware());
