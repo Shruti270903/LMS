@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/student/Loading";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyCourses = () => {
   const { currency, backendUrl, getToken, isEducator } = useContext(AppContext);
@@ -69,8 +70,6 @@ const MyCourses = () => {
                   <td className="px-4 py-3">
                     {new Date(course.createdAt).toLocaleDateString()}
                   </td>
-        
-
                 </tr>
               ))}
             </tbody>
