@@ -1,52 +1,72 @@
-// import { clerkClient } from "@clerk/express";
-// //middleware (protect educator routes)
-// export const protectEducator = async (req, res, next) => {
-//   try {
-//     // const userId = req.auth();
-//     const { userId } = req.auth;
+import userAuth from "../auth/middleware/userAuth.js";
 
-//     const response = await clerkClient.users.getUser(userId);
-//     if (
-//       response.publicMetadata.role!== "educator") {
-//       return res
-//         .status(403)
-//         .json({success: false,  error: "Access denied. Educator role required.\n Unauthoried Access" });
-//     }
-//     return next();
-//     } catch (error) {
-//        return res.json({ success: false, error: "Internal server error" });
-//     }
-// };                  
-import { clerkClient } from "@clerk/express";
+// Protect routes that require a logged-in user
+export const protectUser = userAuth;
 
+// Protect educator routes
 export const protectEducator = async (req, res, next) => {
   try {
-    // ✅ Clerk injects auth object
-    // const { userId } = req.auth;
-    const userId = req.auth().userId;
+    // First verify the JWT and load the user
+    await userAuth(req, res, async () => {
+      if (req.user.role !== "educator") {
+        return res.status(403).json({
+          success: false,
+          message: "Access denied. Educator role required",
+        });
+      }
 
-
-    if (!userId) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized" });
-    }
-
-    const user = await clerkClient.users.getUser(userId);
-
-    if (user.publicMetadata.role !== "educator") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. Educator role required",
-      });
-    }
-
-    // optional: attach user for later use
-    req.user = user;
-
-    next();
+      next();
+    });
   } catch (error) {
     console.error("protectEducator error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+// Protect admin routes
+export const protectAdmin = async (req, res, next) => {
+  try {
+    // First verify JWT and load the user
+    await userAuth(req, res, async () => {
+      if (!["admin", "superadmin"].includes(req.user.role)) {
+        return res.status(403).json({
+          success: false,
+          message: "Access denied. Admin role required",
+        });
+      }
+
+      next();
+    });
+  } catch (error) {
+    console.error("protectAdmin error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// Protect super admin routes
+export const protectSuperAdmin = async (req, res, next) => {
+  try {
+    // First verify JWT and load the user
+    await userAuth(req, res, async () => {
+      if (req.user.role !== "superadmin") {
+        return res.status(403).json({
+          success: false,
+          message: "Access denied. Super Admin role required",
+        });
+      }
+
+      next();
+    });
+  } catch (error) {
+    console.error("protectSuperAdmin error:", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",
