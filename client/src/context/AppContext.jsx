@@ -13,11 +13,25 @@ export const AppContextProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
+  // --------------------------------------------------
+  // General state
+  // --------------------------------------------------
+
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+
+  // --------------------------------------------------
+  // Authentication state
+  // --------------------------------------------------
+
   const [userData, setUserData] = useState(null);
   const [isLoggedin, setIsLoggedin] = useState(false);
+
+  // IMPORTANT:
+  // true = we are still checking the JWT cookie
+  // false = authentication check has finished
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   // --------------------------------------------------
   // Axios
@@ -52,12 +66,14 @@ export const AppContextProvider = ({ children }) => {
   const getUserData = async () => {
     try {
       const { data } = await axios.get(
-        `${backendUrl}/api/user/data`
+        `${backendUrl}/api/user/data`,
+        {
+          withCredentials: true,
+        }
       );
 
       if (data.success) {
         setUserData(data.user);
-
         setIsLoggedin(true);
 
         if (data.user.role === "educator") {
@@ -67,51 +83,64 @@ export const AppContextProvider = ({ children }) => {
         }
 
         return data.user;
-      } else {
-        setUserData(null);
-        setIsLoggedin(false);
-        setIsEducator(false);
       }
+
+      setUserData(null);
+      setIsLoggedin(false);
+      setIsEducator(false);
+
+      return null;
     } catch (error) {
       setUserData(null);
       setIsLoggedin(false);
       setIsEducator(false);
-    }
 
-    return null;
+      return null;
+    }
   };
 
   // --------------------------------------------------
   // Check authentication
   // --------------------------------------------------
 
-  const checkAuth = async () => {
-    try {
-      const { data } = await axios.get(
-        `${backendUrl}/api/auth/is-auth`
-      );
-
-      if (data.success) {
-        setIsLoggedin(true);
-
-        if (data.user.role === "educator") {
-          setIsEducator(true);
-        } else {
-          setIsEducator(false);
-        }
-
-        await getUserData();
-      } else {
-        setIsLoggedin(false);
-        setIsEducator(false);
-        setUserData(null);
+ 
+const checkAuth = async () => {
+  try {
+    const { data } = await axios.get(
+      `${backendUrl}/api/auth/is-auth`,
+      {
+        withCredentials: true,
       }
-    } catch (error) {
+    );
+
+    if (data.success && data.user) {
+      // Store authenticated user
+      setUserData(data.user);
+      setIsLoggedin(true);
+
+      // Check educator role
+      setIsEducator(data.user.role === "educator");
+    } else {
+      setUserData(null);
       setIsLoggedin(false);
       setIsEducator(false);
-      setUserData(null);
     }
-  };
+
+  } catch (error) {
+    console.error(
+      "Authentication check error:",
+      error.response?.data?.message || error.message
+    );
+
+    setUserData(null);
+    setIsLoggedin(false);
+    setIsEducator(false);
+
+  } finally {
+    setIsAuthChecking(false);
+  }
+};
+
 
   // --------------------------------------------------
   // Logout
@@ -120,7 +149,11 @@ export const AppContextProvider = ({ children }) => {
   const logout = async () => {
     try {
       const { data } = await axios.post(
-        `${backendUrl}/api/auth/logout`
+        `${backendUrl}/api/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
       );
 
       if (data.success) {
@@ -137,7 +170,8 @@ export const AppContextProvider = ({ children }) => {
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Logout failed"
+        error.response?.data?.message ||
+          "Logout failed"
       );
     }
   };
@@ -222,7 +256,10 @@ export const AppContextProvider = ({ children }) => {
   const fetchUserEnrolledCourses = async () => {
     try {
       const { data } = await axios.get(
-        `${backendUrl}/api/user/enrolled-courses`
+        `${backendUrl}/api/user/enrolled-courses`,
+        {
+          withCredentials: true,
+        }
       );
 
       if (data.success) {
@@ -274,6 +311,7 @@ export const AppContextProvider = ({ children }) => {
     // Authentication
     isLoggedin,
     setIsLoggedin,
+    isAuthChecking,
     userData,
     setUserData,
     getUserData,

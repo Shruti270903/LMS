@@ -6,6 +6,8 @@ import {
   purchaseCourse,
   updateUserCourseProgress,
   userEnrolledCourses,
+    updateUserProfile,
+     deleteAccount,
 } from "../controllers/userController.js";
 
 import { protectUser } from "../middlewares/authMiddleware.js";
@@ -13,6 +15,12 @@ import { protectUser } from "../middlewares/authMiddleware.js";
 const userRouter = express.Router();
 
 userRouter.get("/data", protectUser, getUserData);
+
+userRouter.patch(
+  "/profile",
+  protectUser,
+  updateUserProfile
+);
 
 userRouter.get(
   "/enrolled-courses",
@@ -42,6 +50,12 @@ userRouter.post(
   "/add-rating",
   protectUser,
   addUserRating
+);
+
+userRouter.delete(
+  "/account",
+  protectUser,
+  deleteAccount
 );
 
 export default userRouter;

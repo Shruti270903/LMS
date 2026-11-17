@@ -1,3 +1,4 @@
+
 import express from "express";
 
 import {
@@ -17,66 +18,40 @@ import {
 
 const educatorRouter = express.Router();
 
-
-/* =========================================================
-   UPDATE ROLE TO EDUCATOR
-   Logged-in student can request educator role
-   ========================================================= */
-
-educatorRouter.get(
+// Update student role to educator
+educatorRouter.post(
   "/update-role",
   protectUser,
   updateRoleToEducator
 );
 
-
-/* =========================================================
-   ADD COURSE
-   Educator only
-   ========================================================= */
-
+// Add new course (educator only)
 educatorRouter.post(
   "/add-course",
-  upload.single("image"),
   protectEducator,
+  upload.single("image"),
   addCourse
 );
 
-
-/* =========================================================
-   GET EDUCATOR COURSES
-   Educator only
-   ========================================================= */
-
+// Get educator courses
 educatorRouter.get(
   "/courses",
   protectEducator,
   getEducatorCourses
 );
 
-
-/* =========================================================
-   EDUCATOR DASHBOARD
-   Educator only
-   ========================================================= */
-
+// Get educator dashboard data
 educatorRouter.get(
   "/dashboard",
   protectEducator,
   educatorDashboardData
 );
 
-
-/* =========================================================
-   ENROLLED STUDENTS
-   Educator only
-   ========================================================= */
-
+// Get enrolled students
 educatorRouter.get(
   "/enrolled-students",
   protectEducator,
   getEnrolledStudentsData
 );
-
 
 export default educatorRouter;

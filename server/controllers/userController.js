@@ -3,6 +3,110 @@ import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.models.js";
 import Course from "../models/Course.js";
 import { courseProgress } from "../models/CourseProgress.js";
+import { v2 as cloudinary } from "cloudinary";
+
+
+export const deleteAccount = async (req, res) => {
+  try {
+await User.findByIdAndDelete(req.userId);
+res.clearCookie("token");
+
+return res.json({
+  success: true,
+  message: "Account deleted successfully",
+});
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// Update User Profile
+export const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { name, imageBase64 } = req.body;
+
+    if (name === undefined && imageBase64 === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "No profile changes provided",
+      });
+    }
+
+    const updates = {};
+
+    if (name !== undefined) {
+      if (typeof name !== "string" || !name.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Name cannot be empty",
+        });
+      }
+
+      if (name.trim().length > 80) {
+        return res.status(400).json({
+          success: false,
+          message: "Name cannot exceed 80 characters",
+        });
+      }
+
+      updates.name = name.trim();
+    }
+
+    if (
+      imageBase64 !== undefined &&
+      imageBase64 !== null &&
+      imageBase64 !== ""
+    ) {
+      if (
+        typeof imageBase64 !== "string" ||
+        imageBase64.length > 7 * 1024 * 1024 ||
+        !/^data:image\/(jpeg|png|webp);base64,/i.test(imageBase64)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Upload a valid JPEG, PNG, or WebP image under 5 MB",
+        });
+      }
+
+      const upload = await cloudinary.uploader.upload(imageBase64, {
+        folder: "lms/profiles",
+        resource_type: "image",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      });
+
+      updates.imageUrl = upload.secure_url;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password -verifyOtp -resetOtp");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update profile",
+    });
+  }
+};
 
 // Get User Data
 export const getUserData = async (req, res) => {

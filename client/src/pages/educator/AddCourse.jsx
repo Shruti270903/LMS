@@ -11,7 +11,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL
 
 const AddCourse = () => {
 
-  const {backUrl, getToken} = useContext(AppContext)
+ const { backendUrl, isEducator } = useContext(AppContext);
   const quillRef = useRef(null);
   const editorRef = useRef(null);
 
@@ -89,51 +89,71 @@ const handleLecture = (action, chapterId, lectureIndex) => {
       isPreviewFree:false,
     });
   };
+
 const handleSubmit = async (e) => {
-  axios.defaults.withCredentials = true;
-    try {
-        e.preventDefault();
-        if (!image) {
-            toast.error('Thumbnail Not Selected');
-        }
-        const courseData = {
-            courseTitle,
-            courseDescription: quillRef.current.root.innerHTML,
-            coursePrice: Number(coursePrice),
-            discount: Number(discount),
-            courseContent: chapters,
-        };
-        const formData = new FormData()
-        formData.append('courseData', JSON.stringify(courseData))
-        formData.append('image', image)
+  e.preventDefault();
 
-        const token = await getToken()
-        const {data} = await axios.post(
-  backendUrl + "/api/educator/add-course",
-  formData,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  if (!isEducator) {
+    toast.error("Only educators can add courses");
+    return;
   }
-);
 
+  if (!image) {
+    toast.error("Thumbnail Not Selected");
+    return;
+  }
 
-        if (data.success) {
-    toast.success(data.message);
-    setCourseTitle('');
-    setCoursePrice(0);
-    setDiscount(0);
-    setImage(null);
-    setChapters([]);
-    quillRef.current.root.innerHTML = "";
-} else {
-    toast.error(data.message)
-}
-      } catch (error) {
-        console.log(error);
+  if (!courseTitle.trim()) {
+    toast.error("Please enter course title");
+    return;
+  }
+
+  try {
+    const courseData = {
+      courseTitle,
+      courseDescription: quillRef.current.root.innerHTML,
+      coursePrice: Number(coursePrice),
+      discount: Number(discount),
+      courseContent: chapters,
+    };
+
+    const formData = new FormData();
+
+    formData.append("courseData", JSON.stringify(courseData));
+    formData.append("image", image);
+
+    const { data } = await axios.post(
+      `${backendUrl}/api/educator/add-course`,
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (data.success) {
+      toast.success(data.message);
+
+      setCourseTitle("");
+      setCoursePrice(0);
+      setDiscount(0);
+      setImage(null);
+      setChapters([]);
+
+      if (quillRef.current) {
+        quillRef.current.root.innerHTML = "";
+      }
+    } else {
+      toast.error(data.message || "Course creation failed");
     }
+  } catch (error) {
+    console.error("Add course error:", error.response?.data || error);
+
+    toast.error(
+      error.response?.data?.message || "Unable to add course"
+    );
+  }
 };
+
 
   useEffect(() => {
     //initiate quill only once
@@ -190,7 +210,7 @@ const handleSubmit = async (e) => {
               />
               <img
                 className="max-h-10"
-                src={image ? URL.createObjectURL(image) : ''}
+               src={image ? URL.createObjectURL(image) : undefined}
                 alt=""
               />
             </label>
@@ -292,7 +312,12 @@ const handleSubmit = async (e) => {
             <div className="flex gap-2 my-4">
               <p>Is Preview Free ? </p>
               <input type="checkbox" className="mt-1 scale-125" checked={lectureDetails.isPreviewFree}
-              onChange={(e)=> setLectureDetails({...lectureDetails, isPreviewFree : e.target.value})} />
+              onChange={(e) =>
+  setLectureDetails({
+    ...lectureDetails,
+    isPreviewFree: e.target.checked,
+  })
+} />
             </div>
             <button onClick={addLecture} type="button" className="w-full bg-blue-400 text-white  px-4 py-2 rounded">Add</button>
             <img onClick={()=> setShowPopup(false)} src={assets.cross_icon} className="absolute top-4 right-4 w-4 cursor-pointer" alt="" />

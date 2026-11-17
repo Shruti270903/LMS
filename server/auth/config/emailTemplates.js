@@ -1,4 +1,4 @@
-export const EMAIL_VERIFY_TEMPELATE = `<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+export const EMAIL_VERIFY_TEMPELATE = (verificationUrl) => `<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -158,10 +158,10 @@ export const EMAIL_VERIFY_TEMPELATE = `<html dir="ltr" xmlns="http://www.w3.org/
                                           <tr>
                                             <td align="center" class="esd-block-text es-p15t es-p15b">
                                               <h1 style="color:#333333;font-size:20px">
-                                                <strong>FORGOT YOUR </strong>
+                                              <strong>VERIFY YOUR </strong>
                                               </h1>
                                               <h1 style="color:#333333;font-size:20px">
-                                                <strong>&nbsp;PASSWORD?</strong>
+                                               <strong>&nbsp;EMAIL</strong>
                                               </h1>
                                             </td>
                                           </tr>
@@ -175,23 +175,23 @@ export const EMAIL_VERIFY_TEMPELATE = `<html dir="ltr" xmlns="http://www.w3.org/
                                           <tr>
                                             <td align="left" class="esd-block-text es-p35r es-p40l">
                                               <p style="text-align:center">
-                                                There was a request to change your password!
+                                            Thank you for registering with us! Please verify your email address to activate your account.
                                               </p>
                                             </td>
                                           </tr>
                                           <tr>
                                             <td align="center" class="esd-block-text es-p25t es-p40r es-p40l">
                                               <p>
-                                                If did not make this request, just ignore this email. Otherwise, please click the button below to change your password:
+                                              Please click the button below to verify your email address:
                                               </p>
                                             </td>
                                           </tr>
                                           <tr>
                                             <td align="center" class="esd-block-button es-p40t es-p40b es-p10r es-p10l">
                                               <span class="es-button-border">
-                                                <a href="https://viewstripo.email/" target="_blank" class="es-button">
-                                                  RESET PASSWORD
-                                                </a>
+                                                <a href="${verificationUrl}" target="_blank" class="es-button">
+    VERIFY EMAIL
+</a>
                                               </span>
                                             </td>
                                           </tr>

@@ -1,170 +1,422 @@
-import React, { useState, useContext } from "react";
-import { assets } from "../assets/assets.js";
+// import React, { useContext, useState } from "react";
+// import { assets } from "../assets/assets";
+// import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+// import { toast } from "react-toastify";
+// import { AppContent } from "../context/AppContext";
+
+// const Login = () => {
+//   const navigate = useNavigate();
+
+//   const { backendUrl, setIsLoggedin, getUserData } =
+//     useContext(AppContent);
+
+//   const [state, setState] = useState("Login");
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+
+//   const onSubmitHandler = async (e) => {
+//     e.preventDefault();
+
+//     try {
+//       axios.defaults.withCredentials = true;
+
+//       if (state === "Sign Up") {
+//         const { data } = await axios.post(
+//           `${backendUrl}/api/auth/register`,
+//           {
+//             name,
+//             email,
+//             password,
+//           },
+//           {
+//             withCredentials: true,
+//           }
+//         );
+
+//         if (data.success) {
+//           setIsLoggedin(true);
+
+//           if (getUserData) {
+//             await getUserData();
+//           }
+
+//           toast.success(data.message || "Account created successfully");
+
+//           navigate("/email-verify");
+//         } else {
+//           toast.error(data.message || "Registration failed");
+//         }
+//       } else {
+//         const { data } = await axios.post(
+//           `${backendUrl}/api/auth/login`,
+//           {
+//             email,
+//             password,
+//           },
+//           {
+//             withCredentials: true,
+//           }
+//         );
+
+//         if (data.success) {
+//           setIsLoggedin(true);
+
+//           if (getUserData) {
+//             await getUserData();
+//           }
+
+//           toast.success(data.message || "Login successful");
+
+//           navigate("/");
+//         } else {
+//           toast.error(data.message || "Login failed");
+//         }
+//       }
+//     } catch (error) {
+//       console.error("AUTH ERROR:", error);
+
+//       toast.error(
+//         error.response?.data?.message ||
+//           error.response?.data?.error ||
+//           "Something went wrong"
+//       );
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center px-4">
+//       <div className="w-full max-w-md">
+
+//         <div className="flex justify-center mb-6">
+//           <img
+//             src={assets.logo}
+//             alt="Edemy"
+//             className="w-40 cursor-pointer"
+//             onClick={() => navigate("/")}
+//           />
+//         </div>
+
+//         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+//           <h2 className="text-2xl font-semibold text-center text-gray-800">
+//             {state === "Sign Up" ? "Create Account" : "Login"}
+//           </h2>
+
+//           <p className="text-sm text-gray-500 text-center mt-2">
+//             {state === "Sign Up"
+//               ? "Create your account to start learning"
+//               : "Login to continue your learning journey"}
+//           </p>
+
+//           <form onSubmit={onSubmitHandler} className="mt-6">
+
+//             {state === "Sign Up" && (
+//               <div className="mb-4">
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Name
+//                 </label>
+
+//                 <input
+//                   type="text"
+//                   value={name}
+//                   onChange={(e) => setName(e.target.value)}
+//                   placeholder="Enter your name"
+//                   required
+//                   className="w-full border border-gray-300 rounded-md px-4 py-2.5 outline-none focus:border-blue-500"
+//                 />
+//               </div>
+//             )}
+
+//             <div className="mb-4">
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 Email
+//               </label>
+
+//               <input
+//                 type="email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 placeholder="Enter your email"
+//                 required
+//                 className="w-full border border-gray-300 rounded-md px-4 py-2.5 outline-none focus:border-blue-500"
+//               />
+//             </div>
+
+//             <div className="mb-2">
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 Password
+//               </label>
+
+//               <input
+//                 type="password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 placeholder="Enter your password"
+//                 required
+//                 className="w-full border border-gray-300 rounded-md px-4 py-2.5 outline-none focus:border-blue-500"
+//               />
+//             </div>
+
+//             {state === "Login" && (
+//               <div className="text-right mb-5">
+//                 <button
+//                   type="button"
+//                   onClick={() => navigate("/reset-password")}
+//                   className="text-sm text-blue-600 hover:underline"
+//                 >
+//                   Forgot password?
+//                 </button>
+//               </div>
+//             )}
+
+//             {state === "Sign Up" && <div className="mb-5" />}
+
+//             <button
+//               type="submit"
+//               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-md transition"
+//             >
+//               {state === "Sign Up" ? "Create Account" : "Login"}
+//             </button>
+//           </form>
+
+//           <div className="text-center mt-6 text-sm text-gray-600">
+//             {state === "Sign Up" ? (
+//               <>
+//                 Already have an account?{" "}
+//                 <button
+//                   type="button"
+//                   onClick={() => setState("Login")}
+//                   className="text-blue-600 font-medium hover:underline"
+//                 >
+//                   Login
+//                 </button>
+//               </>
+//             ) : (
+//               <>
+//                 Don't have an account?{" "}
+//                 <button
+//                   type="button"
+//                   onClick={() => setState("Sign Up")}
+//                   className="text-blue-600 font-medium hover:underline"
+//                 >
+//                   Create Account
+//                 </button>
+//               </>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
+import React, { useContext, useState } from "react";
+import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { AppContent } from "../context/AppContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { AppContent } from "../context/AppContext";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const {backendUrl, setIsLoggedin, getUserData} = useContext(AppContent);
+  const {
+    backendUrl,
+    checkAuth,
+  } = useContext(AppContent);
 
-  const [state, setState] = useState("Sign Up");
+  const [state, setState] = useState("Login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
 
-// const onSubmitHandler = async (e) => {
-//   try {
-//     e.preventDefault();
+    if (loading) return;
 
-//     axios.defaults.withCredentials = true;
+    setLoading(true);
 
-//     if (state === "Sign Up") {
-//       const { data } = await axios.post( backendUrl + "/api/auth/register",{ name, email, password }
-//       );
-//       if (data.success) {
-//         setIsLoggedin(true);
-//         getUserData();
-//         navigate("/");
-//       } else {
-//         toast.error(data.message);
-//       }
-//     } else {
-//       const { data } = await axios.post( `${backendUrl}/api/auth/login`, { email, password }
-//       );
+    try {
+      const endpoint =
+        state === "Sign Up"
+          ? "/api/auth/register"
+          : "/api/auth/login";
 
-//       if (data.success) {
-//         setIsLoggedin(true);
-//         getUserData();
-//         navigate("/");
-//       } else {
-//         toast.error(data.message);
-//       }
-//     }
+      const payload =
+        state === "Sign Up"
+          ? { name: name.trim(), email: email.trim(), password }
+          : { email: email.trim(), password };
 
-//   } catch (error) {
-//     toast.error(error.message);
-//   }
-// };
-
-const onSubmitHandler = async (e) => {
-  e.preventDefault();
-
-  try {
-    if (state === "Sign Up") {
       const { data } = await axios.post(
-        `${backendUrl}/api/auth/register`,
-        { name, email, password }
+        `${backendUrl}${endpoint}`,
+        payload,
+        {
+          withCredentials: true,
+        }
       );
 
       if (data.success) {
-        setIsLoggedin(true);
-        navigate("/"); // AppContext will handle auth state
-      } else {
-        toast.error(data.message);
-      }
+        // Refresh authentication and user information
+        await checkAuth();
 
-    } else {
-      const { data } = await axios.post(
-        `${backendUrl}/api/auth/login`,
-        { email, password }
+        toast.success(
+          data.message ||
+            (state === "Sign Up"
+              ? "Account created successfully"
+              : "Login successful")
+        );
+
+        if (state === "Sign Up") {
+          navigate("/email-verify");
+        } else {
+          navigate("/");
+        }
+      } else {
+        toast.error(data.message || "Authentication failed");
+      }
+    } catch (error) {
+      console.error("AUTH ERROR:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again."
       );
-
-      if (data.success) {
-        setIsLoggedin(true);
-        navigate("/");
-      } else {
-        toast.error(data.message);
-      }
+    } finally {
+      setLoading(false);
     }
-
-  } catch (error) {
-    toast.error(
-      error.response?.data?.message || "Something went wrong"
-    );
-  }
-};
-
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
-      <img
-      onClick={()=>navigate('/')}
-        src={assets.logo}
-        alt=""
-        className="absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer"
-      />
-      <div className="bg-slate-900 p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300 text-sm">
-        <h2 className="text-3xl font-semibold text-white text-center mb-3">
-          {state === "Sign Up" ? "Create Account" : "Login"}
-        </h2>
-        <p className="text-center text-sm mb-6">
-          {state === "Sign Up"
-            ? "Create your account"
-            : "Login to your account!"}
-        </p>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
 
-        <form onSubmit={onSubmitHandler}>
-          {state === "Sign Up" && (
-            <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
-              <img src={assets.person_icon} alt="" />
-              <input onChange={(e)=>setName(e.target.value)} 
-                value={name}
-                className="bg-transparent outline-none"
-                type="text"
-                placeholder="Full Name"
+        <div className="flex justify-center mb-6">
+          <img
+            src={assets.logo}
+            alt="Edemy"
+            className="w-40 cursor-pointer"
+            onClick={() => navigate("/")}
+          />
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+          <h2 className="text-2xl font-semibold text-center text-gray-800">
+            {state === "Sign Up" ? "Create Account" : "Login"}
+          </h2>
+
+          <p className="text-sm text-gray-500 text-center mt-2">
+            {state === "Sign Up"
+              ? "Create your account to start learning"
+              : "Login to continue your learning journey"}
+          </p>
+
+          <form onSubmit={onSubmitHandler} className="mt-6">
+
+            {state === "Sign Up" && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your name"
+                  required
+                  className="w-full border border-gray-300 rounded-md px-4 py-2.5 outline-none focus:border-blue-500"
+                />
+              </div>
+            )}
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
                 required
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 outline-none focus:border-blue-500"
               />
             </div>
-          )}
-          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
-            <img src={assets.mail_icon} alt="" />
-            <input
-            onChange={(e)=>setEmail(e.target.value)} 
-                value={email}
-              className="bg-transparent outline-none"
-              type="email"
-              placeholder="Email id"
-              required
-            />
-          </div>
-          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
-            <img src={assets.lock_icon} alt="" />
-            <input
-            onChange={(e)=>setPassword(e.target.value)} 
+
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+
+              <input
+                type="password"
                 value={password}
-              className="bg-transparent outline-none"
-              type="password"
-              placeholder="Password"
-      autoComplete={state === "Sign Up" ? "new-password" : "current-password"}
-              required
-            />
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 outline-none focus:border-blue-500"
+              />
+            </div>
+
+            {state === "Login" && (
+              <div className="text-right mb-5">
+                <button
+                  type="button"
+                  onClick={() => navigate("/reset-password")}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+
+            {state === "Sign Up" && <div className="mb-5" />}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-3 rounded-md transition"
+            >
+              {loading
+                ? "Please wait..."
+                : state === "Sign Up"
+                  ? "Create Account"
+                  : "Login"}
+            </button>
+          </form>
+
+          <div className="text-center mt-6 text-sm text-gray-600">
+            {state === "Sign Up" ? (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setState("Login")}
+                  className="text-blue-600 font-medium hover:underline"
+                >
+                  Login
+                </button>
+              </>
+            ) : (
+              <>
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setState("Sign Up")}
+                  className="text-blue-600 font-medium hover:underline"
+                >
+                  Create Account
+                </button>
+              </>
+            )}
           </div>
-          <p 
-          onClick={()=>navigate('/reset-password')}
-          className="mb-4 text-indigo-500 cursor-pointer">Forgot Password</p>
-          <button className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium">
-            {state}
-          </button>
-        </form>
-        {state === "Sign Up" ? (
-          <p className="text-gray-400 text-center text-xs mt-4">
-            Already have an account?{" "}
-            <span onClick={() => setState("Login")} className="text-blue-400 cursor-pointer underline">
-              Login
-            </span>
-          </p>
-        ) : (
-          <p className="text-gray-400 text-center text-xs mt-4">
-            Don't have an account?{" "}
-            <span onClick={()=>setState("Sign Up")} className="text-blue-400 cursor-pointer underline">
-              Sign up
-            </span>
-          </p>
-        )}
+        </div>
       </div>
     </div>
   );
